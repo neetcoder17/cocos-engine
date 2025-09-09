@@ -51,7 +51,14 @@ Node::Node() : Node(EMPTY_NODE_NAME) {
 
 Node::Node(const ccstd::string &name) {
 #define NODE_SHARED_MEMORY_BYTE_LENGTH (20)
-    static_assert(offsetof(Node, _padding) + sizeof(_padding) - offsetof(Node, _eventMask) == NODE_SHARED_MEMORY_BYTE_LENGTH, "Wrong shared memory size");
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
+    static_assert(offsetof(Node, _finalOpacity) + sizeof(_finalOpacity) - offsetof(Node, _eventMask) == NODE_SHARED_MEMORY_BYTE_LENGTH, "Wrong shared memory size");
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
     _sharedMemoryActor.initialize(&_eventMask, NODE_SHARED_MEMORY_BYTE_LENGTH);
 #undef NODE_SHARED_MEMORY_BYTE_LENGTH
 
@@ -620,27 +627,27 @@ void Node::setWorldScale(float x, float y, float z) {
         Mat3 localRotInv;
         Mat4 worldMatrixTmp = _worldMatrix;
         Vec3 rescaleFactor;
-        
+
         if (oldWorldScale.x == 0) {
             oldWorldScale.x = 1;
             worldMatrixTmp.m[0] = 1.F;
             rotationFlag = TransformBit::ROTATION;
         }
-        
+
         if (oldWorldScale.y == 0) {
             oldWorldScale.y = 1;
             worldMatrixTmp.m[5] = 1.F;
             rotationFlag = TransformBit::ROTATION;
         }
-        
+
         if (oldWorldScale.z == 0) {
             oldWorldScale.z = 1;
             worldMatrixTmp.m[10] = 1.F;
             rotationFlag = TransformBit::ROTATION;
         }
-        
+
         rescaleFactor = _worldScale / oldWorldScale;
-        
+
         // apply new world scale to temp world matrix
         worldMatrixTmp.scale(rescaleFactor); // need opt
         // get temp local matrix
@@ -655,7 +662,7 @@ void Node::setWorldScale(float x, float y, float z) {
         _localScale.x = Vec3{localRS.m[0], localRS.m[1], localRS.m[2]}.length();
         _localScale.y = Vec3{localRS.m[3], localRS.m[4], localRS.m[5]}.length();
         _localScale.z = Vec3{localRS.m[6], localRS.m[7], localRS.m[8]}.length();
-        
+
         if (_localScale.x == 0 || _localScale.y == 0 || _localScale.z == 0) {
             rotationFlag = TransformBit::ROTATION;
         }
