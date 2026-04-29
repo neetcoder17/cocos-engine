@@ -55,7 +55,7 @@ Node::Node(const ccstd::string &name) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #endif
-    static_assert(offsetof(Node, _finalOpacity) + sizeof(_finalOpacity) - offsetof(Node, _eventMask) == NODE_SHARED_MEMORY_BYTE_LENGTH, "Wrong shared memory size");
+    static_assert(offsetof(Node, _padding) + sizeof(_padding) - offsetof(Node, _eventMask) == NODE_SHARED_MEMORY_BYTE_LENGTH, "Wrong shared memory size");
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
